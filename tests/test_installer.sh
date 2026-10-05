@@ -4,6 +4,10 @@ set -eu
 cd "$(dirname "$0")/.."
 TP_INSTALLER_TEST_MODE=1 source ./install_script.sh
 init_var
+[[ "$IMAGE_RELEASE" == 3.0.0 ]]
+[[ "$trojan_panel_ui_latest_version" == v3.0.0 ]]
+[[ "$trojan_panel_latest_version" == v3.0.0 ]]
+[[ "$trojan_panel_core_latest_version" == v3.0.0 ]]
 test_root=$(mktemp -d)
 trap 'rm -rf "$test_root"' EXIT
 export TEST_DOCKER_LOG="$test_root/docker.log"
@@ -43,16 +47,16 @@ done
 unset -f arch
 # Fresh UI uses pinned GHCR image and current mounts; no real Docker command runs.
 printf '\n\n\n0\n' | install_trojan_panel_ui >/dev/null
-grep -q 'pull ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1' "$TEST_DOCKER_LOG"
-grep -q 'run .*--name trojan-panel-ui .*ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1' "$TEST_DOCKER_LOG"
+grep -q 'pull ghcr.io/electronlsr/trojan-panel-ui:3.0.0' "$TEST_DOCKER_LOG"
+grep -q 'run .*--name trojan-panel-ui .*ghcr.io/electronlsr/trojan-panel-ui:3.0.0' "$TEST_DOCKER_LOG"
 rm "$test_root/ran"; : > "$TEST_DOCKER_LOG"
 # Fresh Backend and Core use the correct images and preserve name/config mounts.
 printf '\n\n\n\ndb-secret\n\n\nredis-secret\n' | install_trojan_panel >/dev/null
-grep -q 'pull ghcr.io/electronlsr/trojan-panel:2026.10.05-r1' "$TEST_DOCKER_LOG"
+grep -q 'pull ghcr.io/electronlsr/trojan-panel:3.0.0' "$TEST_DOCKER_LOG"
 ! grep -qi flushall "$TEST_DOCKER_LOG"
 rm "$test_root/ran"; : > "$TEST_DOCKER_LOG"
 printf '\n\n\n\ndb-secret\ncustom_db\ncustom_table\n\n\nredis-secret\n\n' | install_trojan_panel_core >/dev/null
-grep -q 'pull ghcr.io/electronlsr/trojan-panel-core:2026.10.05-r1' "$TEST_DOCKER_LOG"
+grep -q 'pull ghcr.io/electronlsr/trojan-panel-core:3.0.0' "$TEST_DOCKER_LOG"
 grep -q 'account_table=custom_table' "$TEST_DOCKER_LOG"
 grep -q 'database=custom_db' "$TEST_DOCKER_LOG"
 rm "$test_root/ran"; : > "$TEST_DOCKER_LOG"
@@ -76,6 +80,9 @@ mkdir_tools() { echo 'UNEXPECTED mkdir_tools' >&2; return 1; }
 clear() { :; }
 CORE_ONLY=1
 main <<<26 >/dev/null
+grep -qx "trojan-panel-core ${TROJAN_PANEL_CORE_IMAGE}" "$test_root/upgrade.args"
+# Menu 10 explicitly targets only Core, even on a server with other components.
+main <<<10 >/dev/null
 grep -qx "trojan-panel-core ${TROJAN_PANEL_CORE_IMAGE}" "$test_root/upgrade.args"
 # Choosing fresh install on an existing deployment must stop before dependencies.
 EXISTING=1

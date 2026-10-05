@@ -34,7 +34,7 @@ class FakeDocker:
         self.fail_start = None
         for name, container in self.containers.items():
             self.images[container["Image"]] = {"Id": container["Image"], "Config": copy.deepcopy(container["Config"])}
-            self.images["ghcr.io/electronlsr/" + name + ":2026.10.05-r1"] = {"Id": "sha256:new-" + name, "Config": {}}
+            self.images["ghcr.io/electronlsr/" + name + ":3.0.0"] = {"Id": "sha256:new-" + name, "Config": {}}
 
     def lookup(self, ref):
         if ref in self.containers:
@@ -102,7 +102,7 @@ class UpgradeTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.names = ["trojan-panel", "trojan-panel-core", "trojan-panel-ui"]
         self.fake = FakeDocker(self.names, str(self.root / "data"))
-        self.targets = [(name, "ghcr.io/electronlsr/" + name + ":2026.10.05-r1") for name in self.names]
+        self.targets = [(name, "ghcr.io/electronlsr/" + name + ":3.0.0") for name in self.names]
         for name in self.names:
             path = self.root / "data" / name / "config"
             path.mkdir(parents=True)
@@ -274,6 +274,24 @@ class UpgradeTests(unittest.TestCase):
         self.assert_originals_running()
         self.assertFalse(any(event[0] in ("update", "stop", "create") for event in self.fake.events))
 
+    def test_core_change_skips_unchanged_backend_and_ui(self):
+        for name, target in self.targets:
+            if name != "trojan-panel-core":
+                self.fake.images[target]["Id"] = self.fake.containers[name]["Image"]
+        core_target = "ghcr.io/electronlsr/trojan-panel-core:3.0.0"
+        self.fake.images[core_target] = self.fake.images[self.targets[1][1]]
+        self.targets[1] = ("trojan-panel-core", core_target)
+        self.execute()
+        created = [event[1] for event in self.fake.events if event[0] == "create"]
+        stopped = [event[-1] for event in self.fake.events if event[0] == "stop"]
+        self.assertEqual(created, ["trojan-panel-core"])
+        self.assertEqual(stopped, ["trojan-panel-core"])
+        self.assertFalse(any(event[0] == "db-backup" for event in self.fake.events))
+        for name in ("trojan-panel", "trojan-panel-ui"):
+            self.assertEqual(self.fake.containers[name]["Id"], "old-" + name)
+            self.assertTrue(self.fake.containers[name]["State"]["Running"])
+            self.assertEqual(self.fake.containers[name]["HostConfig"]["RestartPolicy"]["Name"], "always")
+
     def test_unsupported_schema_stops_before_mutation(self):
         with patch.object(u, "check_version", side_effect=u.UpgradeError("legacy schema")):
             with self.assertRaises(u.UpgradeError):
@@ -282,12 +300,34 @@ class UpgradeTests(unittest.TestCase):
         self.assertEqual(self.fake.events, [])
 
 
+class VersionTests(unittest.TestCase):
+    def test_official_previous_fork_and_v3_are_compatible_without_migrations(self):
+        supported = {
+            "trojan-panel-ui": ("v2.3.0", "v2.3.0-r1", "v3.0.0", "v3.0.0-hotfix"),
+            "trojan-panel": ("v2.3.0", "v2.3.1", "v2.3.1-r1", "v3.0.0", "v3.0.0-hotfix"),
+            "trojan-panel-core": ("v2.3.0", "v2.3.1", "v2.3.1-cores.20261005", "v3.0.0", "v3.0.0-hotfix"),
+        }
+        for name, versions in supported.items():
+            for version in versions:
+                with self.subTest(name=name, version=version), patch.object(u, "docker", return_value=version) as command:
+                    u.check_version(name)
+                    args = ("exec", name, "cat", "/tpdata/trojan-panel-ui/version") if name == "trojan-panel-ui" else ("exec", name, "./" + name, "-version")
+                    command.assert_called_once_with(*args)
+
+    def test_older_or_unknown_schema_versions_still_fail_closed(self):
+        for name in ("trojan-panel", "trojan-panel-core", "trojan-panel-ui"):
+            for version in ("v2.1.4", "v2.2.1", "v3.1.0", "unknown", ""):
+                with self.subTest(name=name, version=version), patch.object(u, "docker", return_value=version):
+                    with self.assertRaises(u.UpgradeError):
+                        u.check_version(name)
+
+
 class PayloadTests(unittest.TestCase):
     def test_new_defaults_and_custom_settings(self):
         container = fixture()
         old = {"Config": copy.deepcopy(container["Config"])}
         new = {"Config": {"Entrypoint": ["/new-entrypoint"], "Cmd": ["serve"], "WorkingDir": "/tpdata/trojan-panel",
-                          "Env": ["NEW_DEFAULT=yes", "mariadb_pas=wrong"], "Labels": {"org.opencontainers.image.version": "2026.10.05-r1"}}}
+                          "Env": ["NEW_DEFAULT=yes", "mariadb_pas=wrong"], "Labels": {"org.opencontainers.image.version": "3.0.0"}}}
         payload = u.create_payload(container, old, new, "new:tag")
         self.assertEqual(payload["Entrypoint"], ["/new-entrypoint"])
         self.assertIn("mariadb_pas=secret with = signs", payload["Env"])

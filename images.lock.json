@@ -1,5 +1,5 @@
 {
-  "release": "2026.10.05-r1",
+  "release": "3.0.0",
   "platforms": [
     "linux/amd64",
     "linux/386",
@@ -11,19 +11,19 @@
   ],
   "images": {
     "trojan-panel": {
-      "reference": "ghcr.io/electronlsr/trojan-panel:2026.10.05-r1@sha256:9385f95767d30e6f10959f4b22ca3d6ff53d6c7e593f3370cf5d54179420cd55",
-      "source_commit": "de18266d84718195e4007221428098916cf253c2",
-      "workflow_url": "https://github.com/electronlsr/trojan-panel/actions/runs/37268784528"
+      "reference": "ghcr.io/electronlsr/trojan-panel:3.0.0@sha256:2ed3a42463e09f77fd0688dd52459ad8f42276620daff6d074b99e2e0011f854",
+      "source_commit": "50a8d5b4670ce5cf3a1ee1c626e41b0e089c8124",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel/actions/runs/37273568208"
     },
     "trojan-panel-core": {
-      "reference": "ghcr.io/electronlsr/trojan-panel-core:2026.10.05-r1@sha256:4525353d529281a85a6cb14859cebb5ccc2da42a1fbc300ef4fcac101be29df8",
-      "source_commit": "aec876b447a2a0a6a499b7ae8718239d0bd54bc8",
-      "workflow_url": "https://github.com/electronlsr/trojan-panel-core/actions/runs/37268764462"
+      "reference": "ghcr.io/electronlsr/trojan-panel-core:3.0.0@sha256:c7145674f4a7703d1dd75cfad3616c2e384724dcaf7d98d3266c5916d2944aca",
+      "source_commit": "6883539353afefdbe81089eee02b9a428262bc25",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel-core/actions/runs/37273550151"
     },
     "trojan-panel-ui": {
-      "reference": "ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1@sha256:a4db5738e9898be6aa5828cf91271e0e3beb0dbeb85d864f726687e4e4e55916",
-      "source_commit": "27999f704632f6d5593fdb66c6565f7f228a9cf9",
-      "workflow_url": "https://github.com/electronlsr/trojan-panel-ui/actions/runs/37268805117"
+      "reference": "ghcr.io/electronlsr/trojan-panel-ui:3.0.0@sha256:94906e3c9a53186e09eccc72545dd3957429fce3204ec3c97095ca073b4f31b5",
+      "source_commit": "af6b42711317b57fdfd7853f789b8fbaff45a5aa",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel-ui/actions/runs/37273789231"
     }
   }
 }

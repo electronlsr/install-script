@@ -7,22 +7,26 @@
 <a href="https://github.com/trojanpanel/install-script/stargazers"><img src="https://img.shields.io/github/stars/trojanpanel/install-script" alt="GitHub stars"></a>
 <a href="https://github.com/trojanpanel/install-script/forks"><img src="https://img.shields.io/github/forks/trojanpanel/install-script" alt="GitHub forks"></a>
 <a href="https://github.com/trojanpanel/install-script/issues"><img src="https://img.shields.io/github/issues/trojanpanel/install-script" alt="GitHub issues"></a>
-<a href="https://github.com/trojanpanel/install-script/releases"><img src="https://img.shields.io/github/v/release/trojanpanel/install-script" alt="GitHub release"></a>
+<a href="https://github.com/electronlsr/install-script/blob/main/images.lock.json"><img src="https://img.shields.io/badge/release-3.0.0-blue" alt="GitHub release"></a>
 <a href="https://hub.docker.com/r/jonssonyan/trojan-panel"><img src="https://img.shields.io/docker/pulls/jonssonyan/trojan-panel" alt="Docker pulls"></a>
 </p>
 <h3>支持Xray/Trojan-Go/Hysteria/NaiveProxy的多用户Web管理面板</h3>
 <a href="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8"><img src="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8" alt="Trojan Panel"/></a>
 </div>
 
-## electronlsr 2026.10.05-r1 版本
+## electronlsr 3.0.0 版本
 
 本分支使用 `ghcr.io/electronlsr/trojan-panel`、`trojan-panel-core`、`trojan-panel-ui` 的固定版本镜像。历史单机脚本和 archive 脚本仍是旧版工具，不用于本次升级。
+
+### 3.0.0 的 Trojan 兼容修复
+
+Core 3.0.0 恢复对旧 Trojan 节点隐藏 `xray_flow` 值（例如 `xtls-rprx-vision`）的兼容，沿用现有节点参数和数据，不新增数据库迁移。要先更新受影响的 Core 节点，选择 **10：Safe upgrade Trojan Panel Core**，再输入 `y`；选择 **26** 可继续把本机其他已安装组件升级到 3.0.0，镜像已匹配的组件会跳过。
 
 ### 已有服务器请选择菜单 26
 
 使用 root 运行下方联机脚本，然后选择 **26：SAFE UPGRADE all installed Panel components**。只有 Core 的节点服务器只升级 Core；也可用菜单 8/9/10 分别升级前端/后端/Core。**不要卸载重装，也不要对现有脚本安装运行 Compose 或选择全新安装菜单来升级。**
 
-- 支持官方后端/Core v2.3.0、v2.3.1，前端 v2.3.0，以及本分支基于这些版本的构建。更早或未知数据库版本会在替换前停止，不自动执行历史 SQL 迁移。
+- 支持官方后端/Core v2.3.0、v2.3.1，前端 v2.3.0，以及本分支基于这些版本的旧构建和 v3.0.0。更早或未知数据库版本会在替换前停止，不自动执行历史 SQL 迁移。
 - 需要本机 Docker Engine Unix socket、Python 3.6+、GNU tar，以及容纳新旧镜像和挂载数据备份的空间。主要适用于官方脚本的 host 网络部署。升级不会安装系统软件、改动 Docker/防火墙、替换 MariaDB/Redis 或清空 Redis。
 - 先拉取所有选中镜像，再中断服务。按镜像 ID 判断是否需要升级，因此官方程序版本号相同也能升级到本分支。
 - 保留容器名称、实际环境变量（含密码）、挂载、网络及运行参数。未自定义的镜像启动命令随新镜像更新，自定义启动命令保留。

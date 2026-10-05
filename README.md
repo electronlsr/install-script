@@ -7,22 +7,26 @@
 <a href="https://github.com/trojanpanel/install-script/stargazers"><img src="https://img.shields.io/github/stars/trojanpanel/install-script" alt="GitHub stars"></a>
 <a href="https://github.com/trojanpanel/install-script/forks"><img src="https://img.shields.io/github/forks/trojanpanel/install-script" alt="GitHub forks"></a>
 <a href="https://github.com/trojanpanel/install-script/issues"><img src="https://img.shields.io/github/issues/trojanpanel/install-script" alt="GitHub issues"></a>
-<a href="https://github.com/trojanpanel/install-script/releases"><img src="https://img.shields.io/github/v/release/trojanpanel/install-script" alt="GitHub release"></a>
+<a href="https://github.com/electronlsr/install-script/blob/main/images.lock.json"><img src="https://img.shields.io/badge/release-3.0.0-blue" alt="GitHub release"></a>
 <a href="https://hub.docker.com/r/jonssonyan/trojan-panel"><img src="https://img.shields.io/docker/pulls/jonssonyan/trojan-panel" alt="Docker pulls"></a>
 </p>
 <h3>Multi-user web administration panel supporting Xray/Trojan-Go/Hysteria/NaiveProxy</h3>
 <a href="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8"><img src="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8" alt="Trojan Panel"/></a>
 </div>
 
-## electronlsr release 2026.10.05-r1
+## electronlsr release 3.0.0
 
 This fork installs the versioned `ghcr.io/electronlsr/trojan-panel`, `trojan-panel-core`, and `trojan-panel-ui` images. Historical standalone/archive scripts remain upstream legacy tools, not this release's upgrade path.
+
+### Trojan compatibility fix in 3.0.0
+
+Core 3.0.0 restores compatibility with existing Trojan node records that retain a hidden legacy `xray_flow` value such as `xtls-rprx-vision`. Existing node settings and data are reused; no database schema migration is added. To update an affected Core node first, choose **10: Safe upgrade Trojan Panel Core**, then `y`. Choose **26** to update the other installed components to 3.0.0 as well; components already on the pinned image are skipped.
 
 ### Existing servers: use menu 26
 
 Run the online script below as root, then select **26: SAFE UPGRADE all installed Panel components**. For a node-only server this upgrades only Core. Menus 8/9/10 upgrade UI/backend/Core separately. **Do not uninstall/reinstall, run Compose against an existing script installation, or choose fresh-install menus to upgrade.**
 
-- Supported starting point: upstream backend/Core v2.3.0 or v2.3.1 and UI v2.3.0, plus this fork's v2.3.1/v2.3.0-based builds. Earlier/unknown schema versions stop before replacement; no historical SQL migrations run.
+- Supported starting point: upstream backend/Core v2.3.0 or v2.3.1 and UI v2.3.0, plus this fork's earlier v2.3.1/v2.3.0-based builds and v3.0.0. Earlier/unknown schema versions stop before replacement; no historical SQL migrations run.
 - Requires a local Docker Engine Unix socket, Python 3.6+, GNU tar, and enough disk space for old + new images and a mounted-data backup. Existing host-network deployments are the primary supported topology. The upgrade does not install packages, edit Docker/firewall settings, replace MariaDB/Redis or flush Redis.
 - All selected images are pulled first. Image IDs decide whether an update is needed, even when upstream binary version strings match.
 - Container names, inspected environment (including passwords), bind/named/anonymous mounts and runtime settings are carried forward. The new image's default startup command is used unless you customized it.

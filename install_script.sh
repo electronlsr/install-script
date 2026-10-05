@@ -3,7 +3,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
 # System Required: CentOS 7+/Ubuntu 18+/Debian 10+
-# Version: 2026.10.05-r1
+# Version: 3.0.0
 # Description: One click Install Trojan Panel server
 # Author: jonssonyan <https://jonssonyan.com>
 # Fork: https://github.com/electronlsr/install-script
@@ -95,18 +95,18 @@ init_var() {
   trojan_panel_core_port=8082
 
   # Versioned fork release. Docker selects the native platform from each manifest.
-  IMAGE_RELEASE="2026.10.05-r1"
-  TROJAN_PANEL_UI_IMAGE="ghcr.io/electronlsr/trojan-panel-ui:${IMAGE_RELEASE}@sha256:a4db5738e9898be6aa5828cf91271e0e3beb0dbeb85d864f726687e4e4e55916"
-  TROJAN_PANEL_IMAGE="ghcr.io/electronlsr/trojan-panel:${IMAGE_RELEASE}@sha256:9385f95767d30e6f10959f4b22ca3d6ff53d6c7e593f3370cf5d54179420cd55"
-  TROJAN_PANEL_CORE_IMAGE="ghcr.io/electronlsr/trojan-panel-core:${IMAGE_RELEASE}@sha256:4525353d529281a85a6cb14859cebb5ccc2da42a1fbc300ef4fcac101be29df8"
+  IMAGE_RELEASE="3.0.0"
+  TROJAN_PANEL_UI_IMAGE="ghcr.io/electronlsr/trojan-panel-ui:${IMAGE_RELEASE}@sha256:94906e3c9a53186e09eccc72545dd3957429fce3204ec3c97095ca073b4f31b5"
+  TROJAN_PANEL_IMAGE="ghcr.io/electronlsr/trojan-panel:${IMAGE_RELEASE}@sha256:2ed3a42463e09f77fd0688dd52459ad8f42276620daff6d074b99e2e0011f854"
+  TROJAN_PANEL_CORE_IMAGE="ghcr.io/electronlsr/trojan-panel-core:${IMAGE_RELEASE}@sha256:c7145674f4a7703d1dd75cfad3616c2e384724dcaf7d98d3266c5916d2944aca"
 
-  # Upstream application schema versions (not release/update identifiers).
+  # Application versions in this release; supported prior versions are checked separately.
   trojan_panel_ui_current_version=""
-  trojan_panel_ui_latest_version="v2.3.0"
+  trojan_panel_ui_latest_version="v3.0.0"
   trojan_panel_current_version=""
-  trojan_panel_latest_version="v2.3.1"
+  trojan_panel_latest_version="v3.0.0"
   trojan_panel_core_current_version=""
-  trojan_panel_core_latest_version="v2.3.1"
+  trojan_panel_core_latest_version="v3.0.0"
 
 
 }
@@ -1574,10 +1574,10 @@ def wait_running(name, timeout=45):
 def check_version(name):
     if name == "trojan-panel-ui":
         version = docker("exec", name, "cat", "/tpdata/trojan-panel-ui/version")
-        compatible = version == "v2.3.0" or version.startswith("v2.3.0-")
+        compatible = version in ("v2.3.0", "v3.0.0") or version.startswith(("v2.3.0-", "v3.0.0-"))
     else:
         version = docker("exec", name, "./" + name, "-version")
-        compatible = version in ("v2.3.0", "v2.3.1") or version.startswith("v2.3.1-")
+        compatible = version in ("v2.3.0", "v2.3.1", "v3.0.0") or version.startswith(("v2.3.1-", "v3.0.0-"))
     if not compatible:
         raise UpgradeError("{} reports unsupported schema version {}. Upgrade older installations separately; no legacy SQL is run here.".format(name, version))
 

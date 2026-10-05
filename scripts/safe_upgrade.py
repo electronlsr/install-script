@@ -267,10 +267,10 @@ def wait_running(name, timeout=45):
 def check_version(name):
     if name == "trojan-panel-ui":
         version = docker("exec", name, "cat", "/tpdata/trojan-panel-ui/version")
-        compatible = version == "v2.3.0" or version.startswith("v2.3.0-")
+        compatible = version in ("v2.3.0", "v3.0.0") or version.startswith(("v2.3.0-", "v3.0.0-"))
     else:
         version = docker("exec", name, "./" + name, "-version")
-        compatible = version in ("v2.3.0", "v2.3.1") or version.startswith("v2.3.1-")
+        compatible = version in ("v2.3.0", "v2.3.1", "v3.0.0") or version.startswith(("v2.3.1-", "v3.0.0-"))
     if not compatible:
         raise UpgradeError("{} reports unsupported schema version {}. Upgrade older installations separately; no legacy SQL is run here.".format(name, version))
 

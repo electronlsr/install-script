@@ -34,7 +34,7 @@ services:
     command: redis-server --requirepass ${redis_pass} --port 6378
 
   trojan-panel:
-    image: ghcr.io/electronlsr/trojan-panel:2026.10.05-r1@sha256:9385f95767d30e6f10959f4b22ca3d6ff53d6c7e593f3370cf5d54179420cd55
+    image: ghcr.io/electronlsr/trojan-panel:3.0.0@sha256:2ed3a42463e09f77fd0688dd52459ad8f42276620daff6d074b99e2e0011f854
     container_name: trojan-panel
     restart: always
     network_mode: host
@@ -55,7 +55,7 @@ services:
       - "server_port=8081"
 
   trojan-panel-ui:
-    image: ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1@sha256:a4db5738e9898be6aa5828cf91271e0e3beb0dbeb85d864f726687e4e4e55916
+    image: ghcr.io/electronlsr/trojan-panel-ui:3.0.0@sha256:94906e3c9a53186e09eccc72545dd3957429fce3204ec3c97095ca073b4f31b5
     container_name: trojan-panel-ui
     restart: always
     network_mode: host
@@ -64,7 +64,7 @@ services:
       - "/tpdata/cert/:/tpdata/cert/"
 
   trojan-panel-core:
-    image: ghcr.io/electronlsr/trojan-panel-core:2026.10.05-r1@sha256:4525353d529281a85a6cb14859cebb5ccc2da42a1fbc300ef4fcac101be29df8
+    image: ghcr.io/electronlsr/trojan-panel-core:3.0.0@sha256:c7145674f4a7703d1dd75cfad3616c2e384724dcaf7d98d3266c5916d2944aca
     container_name: trojan-panel-core
     restart: always
     network_mode: host
