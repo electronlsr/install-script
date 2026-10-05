@@ -1,0 +1,29 @@
+{
+  "release": "2026.10.05-r1",
+  "platforms": [
+    "linux/amd64",
+    "linux/386",
+    "linux/arm/v6",
+    "linux/arm/v7",
+    "linux/arm64",
+    "linux/ppc64le",
+    "linux/s390x"
+  ],
+  "images": {
+    "trojan-panel": {
+      "reference": "ghcr.io/electronlsr/trojan-panel:2026.10.05-r1@sha256:9385f95767d30e6f10959f4b22ca3d6ff53d6c7e593f3370cf5d54179420cd55",
+      "source_commit": "de18266d84718195e4007221428098916cf253c2",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel/actions/runs/37268784528"
+    },
+    "trojan-panel-core": {
+      "reference": "ghcr.io/electronlsr/trojan-panel-core:2026.10.05-r1@sha256:4525353d529281a85a6cb14859cebb5ccc2da42a1fbc300ef4fcac101be29df8",
+      "source_commit": "aec876b447a2a0a6a499b7ae8718239d0bd54bc8",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel-core/actions/runs/37268764462"
+    },
+    "trojan-panel-ui": {
+      "reference": "ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1@sha256:a4db5738e9898be6aa5828cf91271e0e3beb0dbeb85d864f726687e4e4e55916",
+      "source_commit": "27999f704632f6d5593fdb66c6565f7f228a9cf9",
+      "workflow_url": "https://github.com/electronlsr/trojan-panel-ui/actions/runs/37268805117"
+    }
+  }
+}

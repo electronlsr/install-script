@@ -1,0 +1,41 @@
+name: Installer checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  mocked-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Shell syntax
+        run: bash -n install_script.sh tests/test_installer.sh
+      - name: Upgrade and failure-path unit tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Fresh install and menu smoke tests (mocked Docker)
+        run: bash tests/test_installer.sh
+  anonymous-release-pulls:
+    needs: mocked-tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/386, linux/arm/v6, linux/arm/v7, linux/arm64, linux/ppc64le, linux/s390x]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Pull all three release images without registry credentials
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          set -euo pipefail
+          export DOCKER_CONFIG="$(mktemp -d)"
+          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
+          TP_INSTALLER_TEST_MODE=1 source ./install_script.sh
+          init_var
+          for image in "$TROJAN_PANEL_IMAGE" "$TROJAN_PANEL_CORE_IMAGE" "$TROJAN_PANEL_UI_IMAGE"; do
+            docker pull --platform "$PLATFORM" "$image"
+            docker image inspect "$image" --format '{{.Id}} {{json .RepoDigests}}'
+          done

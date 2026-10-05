@@ -14,6 +14,38 @@
 <a href="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8"><img src="https://github.com/trojanpanel/install-script/assets/46235235/7ac2bba1-b442-442d-b48e-b52f92e0bad8" alt="Trojan Panel"/></a>
 </div>
 
+## electronlsr 2026.10.05-r1 版本
+
+本分支使用 `ghcr.io/electronlsr/trojan-panel`、`trojan-panel-core`、`trojan-panel-ui` 的固定版本镜像。历史单机脚本和 archive 脚本仍是旧版工具，不用于本次升级。
+
+### 已有服务器请选择菜单 26
+
+使用 root 运行下方联机脚本，然后选择 **26：SAFE UPGRADE all installed Panel components**。只有 Core 的节点服务器只升级 Core；也可用菜单 8/9/10 分别升级前端/后端/Core。**不要卸载重装，也不要对现有脚本安装运行 Compose 或选择全新安装菜单来升级。**
+
+- 支持官方后端/Core v2.3.0、v2.3.1，前端 v2.3.0，以及本分支基于这些版本的构建。更早或未知数据库版本会在替换前停止，不自动执行历史 SQL 迁移。
+- 需要本机 Docker Engine Unix socket、Python 3.6+、GNU tar，以及容纳新旧镜像和挂载数据备份的空间。主要适用于官方脚本的 host 网络部署。升级不会安装系统软件、改动 Docker/防火墙、替换 MariaDB/Redis 或清空 Redis。
+- 先拉取所有选中镜像，再中断服务。按镜像 ID 判断是否需要升级，因此官方程序版本号相同也能升级到本分支。
+- 保留容器名称、实际环境变量（含密码）、挂载、网络及运行参数。未自定义的镜像启动命令随新镜像更新，自定义启动命令保留。
+- 后端升级前通过已安装的 `mariadb-dump`/`mysqldump`，或现有 host 网络的 `trojan-panel-mariadb` 容器，生成 `trojan_panel_db` 逻辑备份。备份失败则停止。远程数据库且无可用客户端时，先安装匹配的数据库备份客户端。
+- 选中的应用容器停止后，备份挂载数据、配置、证书和 Core 的 SQLite。备份及 `RECOVERY.txt` 位于 `/var/backups/trojan-panel/<时间戳>/`，仅 root 可读。备份含密码/私钥，务必安全保存一份到服务器之外。只升级节点时，不会备份远端 MySQL，请先在后端服务器备份。
+- 保留旧镜像和 `.pre-<时间戳>` 旧容器，并关闭旧容器自动启动。替换/启动失败时尝试恢复原容器。**容器回退不会撤销 MySQL、SQLite 或配置写入。** 恢复数据库前需停止所有写入者（含其他服务器上的 Core）；恢复旧快照会丢失之后的写入，因此不会自动恢复数据库。
+- 普通终端断线/中断会触发恢复；强制 SIGKILL、主机断电或 Docker 不可用时，可能需要按保存的记录手工恢复，无法保证自动回退。
+- 先升级一台，验证登录、订阅和节点真实流量，再逐台升级。启动检查不等于完整代理流量测试。确认无需回退之前，不要清理保留的旧容器和旧镜像。
+
+全新安装也使用同一固定版本镜像。三个应用镜像支持下列架构；上游数据库及反向代理镜像有各自的平台限制。全新安装保留上游的部署设置，本次不进行额外的安全配置改造。
+
+精确的多架构镜像摘要、源码提交和成功发布流程见 [images.lock.json](images.lock.json)。安装脚本的 CI 还会对每个架构进行匿名拉取。
+
+### 脚本检查
+
+```shell
+bash -n install_script.sh
+python3 -m unittest discover -s tests -v
+bash tests/test_installer.sh
+```
+
+以上是静态和模拟 Docker 测试，不会以 root 执行安装脚本或连接现有部署。`scripts/safe_upgrade.py` 内嵌于单文件脚本，修改后运行 `python3 scripts/embed_upgrade.py` 并重新测试。
+
 ## 特点
 
 - 极速搭建: 一键安装脚本，降低部署门槛，快速搭建系统
@@ -36,7 +68,7 @@ CPU: linux/amd64 / linux/arm/v6 / linux/arm/v7 / linux/arm64 / linux/s390x / lin
 - 联机（推荐）
 
     ```shell
-    source <(curl -L https://github.com/trojanpanel/install-script/raw/main/install_script.sh)
+    curl -fsSL https://raw.githubusercontent.com/electronlsr/install-script/main/install_script.sh -o /tmp/trojan-panel-install.sh && bash /tmp/trojan-panel-install.sh
     ```
 
 - 单机
@@ -63,7 +95,7 @@ You can subscribe to my channel on YouTube: https://www.youtube.com/@jonssonyan
 
 ## 报告缺陷与问题
 
-[Issues](https://github.com/trojanpanel/install-script/issues)
+[Issues](https://github.com/electronlsr/install-script/issues)
 
 ## 致谢
 

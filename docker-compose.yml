@@ -1,3 +1,5 @@
+# New deployments only. Existing script installations: use install_script.sh menu 26.
+# Back up data and set your existing credentials explicitly before using Compose.
 version: '3'
 
 services:
@@ -32,7 +34,7 @@ services:
     command: redis-server --requirepass ${redis_pass} --port 6378
 
   trojan-panel:
-    image: jonssonyan/trojan-panel
+    image: ghcr.io/electronlsr/trojan-panel:2026.10.05-r1@sha256:9385f95767d30e6f10959f4b22ca3d6ff53d6c7e593f3370cf5d54179420cd55
     container_name: trojan-panel
     restart: always
     network_mode: host
@@ -53,7 +55,7 @@ services:
       - "server_port=8081"
 
   trojan-panel-ui:
-    image: jonssonyan/trojan-panel-ui
+    image: ghcr.io/electronlsr/trojan-panel-ui:2026.10.05-r1@sha256:a4db5738e9898be6aa5828cf91271e0e3beb0dbeb85d864f726687e4e4e55916
     container_name: trojan-panel-ui
     restart: always
     network_mode: host
@@ -62,7 +64,7 @@ services:
       - "/tpdata/cert/:/tpdata/cert/"
 
   trojan-panel-core:
-    image: jonssonyan/trojan-panel-core
+    image: ghcr.io/electronlsr/trojan-panel-core:2026.10.05-r1@sha256:4525353d529281a85a6cb14859cebb5ccc2da42a1fbc300ef4fcac101be29df8
     container_name: trojan-panel-core
     restart: always
     network_mode: host
@@ -84,7 +86,7 @@ services:
       - "mariadb_user=root"
       - "mariadb_pas=${mariadb_pas}"
       - "database=trojan_panel_db"
-      - "account-table=account"
+      - "account_table=account"
       - "redis_host=127.0.0.1"
       - "redis_port=6378"
       - "redis_pass=${redis_pass}"
