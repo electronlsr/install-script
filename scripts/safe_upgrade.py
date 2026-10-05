@@ -165,9 +165,11 @@ def mounted_source(container, filename):
     mounts = sorted(container.get("Mounts", []), key=lambda mount: len(mount["Destination"].rstrip("/")), reverse=True)
     for mount in mounts:
         destination = mount["Destination"].rstrip("/")
-        if filename == destination:
-            return Path(mount["Source"])
-        if filename.startswith(destination + "/"):
+        if filename == destination or filename.startswith(destination + "/"):
+            if mount["Type"] not in ("bind", "volume") or not mount.get("Source"):
+                raise UpgradeError("{} is covered by a non-persistent mount; manual migration is required.".format(filename))
+            if filename == destination:
+                return Path(mount["Source"])
             return Path(mount["Source"]) / filename[len(destination):].lstrip("/")
     raise UpgradeError("{} does not persist {} in a mount; manual migration is required.".format(container["Name"], filename))
 

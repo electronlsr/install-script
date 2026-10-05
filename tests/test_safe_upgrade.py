@@ -255,6 +255,14 @@ class UpgradeTests(unittest.TestCase):
         self.assert_originals_running()
         self.assertFalse(any(event[0] in ("stop", "update", "rename", "create") for event in self.fake.events))
 
+    def test_core_tmpfs_state_rejected_before_mutation(self):
+        container = self.fake.containers["trojan-panel-core"]
+        container["Mounts"].append({"Type": "tmpfs", "Source": "", "Destination": "/tpdata/trojan-panel-core/config/sqlite"})
+        with self.assertRaisesRegex(u.UpgradeError, "non-persistent"):
+            self.execute()
+        self.assert_originals_running()
+        self.assertFalse(any(event[0] in ("stop", "update", "rename", "create") for event in self.fake.events))
+
     def test_same_upstream_version_still_upgrades_different_image(self):
         self.execute()
         self.assertEqual(sum(event[0] == "create" for event in self.fake.events), 3)
